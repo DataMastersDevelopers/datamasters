@@ -1,0 +1,53 @@
+port: 8080
+socks-port: 443
+redir-port: 443
+mixed-port: 7893
+mode: rule
+log-level: silent
+allow-lan: false
+external-controller: 0.0.0.0:9090
+bind-address: "*"
+ipv6: false
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: redir-host
+  listen: 0.0.0.0:7894
+  fallback-filter:
+    geoip: false
+    ipcidr:
+    - 240.0.0.0/4
+  nameserver:
+    - https://ns42.cloudns.net/dns-query
+    - tls://ns42.cloudns.net:443
+  fallback:
+    - tcp://108.137.44.39
+    - tcp://108.137.44.9
+    - 108.137.44.39
+    - 108.137.44.9
+tun:
+  enable: false
+  stack: system 
+  macOS-auto-route: true
+  macOS-auto-detect-interface: true
+  dns-hijack:
+    - tcp://ns43.cloudns.net:443
+experimental:
+  interface-name: en0
+ 
+proxies:
+  - {name: usa-v2ray.sshkit.net, server: datamasters.myftp.org, port: 443, type: vmess, uuid: 0ed8d76a-01a9-4e47-9d65-dfc29382cebb, sni: usa-v2ray.sshkit.net, alterId: 64, cipher: auto, tls: 1, skip-cert-verify: true, udp: true, network: ws, ws-opts: {path: /sshkit, headers: {Host: usa-v2ray.sshkit.net}}}
+ 
+proxy-groups:
+  - name: DMD-Generator
+    type: load-balance
+    url: 'http://www.gstatic.com/generate_204'
+    interval: 45
+    strategy: consistent-hashing
+    proxies:
+      - usa-v2ray.sshkit.net
+ 
+rules:
+ - MATCH,DMD-Generator
+ 
+#changed load balanced to %200 - default =%300
